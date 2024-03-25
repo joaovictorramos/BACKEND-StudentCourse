@@ -45,4 +45,10 @@ public class Course {
         inverseJoinColumns = @JoinColumn(name="id_student")
     )
     private Set<Student> student = new HashSet<>();
+
+    public Course(UUID id, String name, String description){
+        this.id = id;
+        this.name = name;
+        this.description = description;
+    }
 }

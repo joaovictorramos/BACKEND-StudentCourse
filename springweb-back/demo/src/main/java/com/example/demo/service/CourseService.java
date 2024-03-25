@@ -8,12 +8,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.model.Course;
+import com.example.demo.model.Student;
 import com.example.demo.repository.CourseRepository;
+import com.example.demo.repository.StudentRepository;
 
 @Service
 public class CourseService {
     @Autowired
     private CourseRepository courseRepository;
+
+    @Autowired
+    private StudentRepository studentRepository;
+
 
     public void save(Course course){
         courseRepository.save(course);
@@ -31,6 +37,14 @@ public class CourseService {
             course = courseRepository.findById(UUID.fromString(idCourse));
         }
         return course.get();
+    }
+
+    public List<Course> findAll(){
+        List<Course> courses = courseRepository.findAllPersonalize();
+        if(courses == null){
+            return null;
+        }
+        return courses;
     }
 
     public List<Course> findByName(String name){
@@ -80,8 +94,22 @@ public class CourseService {
 
     public void deleteByName(String nameParam){
         if(!nameParam.trim().isEmpty() || nameParam.trim() != null){
-            List<Course> course = courseRepository.findByName(nameParam);
-            if(course != null){
+            List<Course> courses = courseRepository.findByName(nameParam);
+            if(courses != null){
+                Course course = courses.get(0);
+                List<Student> students = courseRepository.findByEnrolledStudent(course.getName());
+                if(students != null){
+                    course.setStudent(null);
+                    students.forEach(s ->{
+                        s.getCourses().forEach(c ->{
+                            if(c.getName().equals(course.getName())){
+                                c = null;
+                            }
+                        });
+                        studentRepository.save(s);
+                    });
+                    courseRepository.save(course);
+                }
                 courseRepository.deleteByName(nameParam);
             }
         }

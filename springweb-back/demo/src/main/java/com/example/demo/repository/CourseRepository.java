@@ -1,5 +1,6 @@
 package com.example.demo.repository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -9,11 +10,19 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import com.example.demo.model.Course;
+import com.example.demo.model.Student;
 
 import jakarta.transaction.Transactional;
 
 public interface CourseRepository extends CrudRepository<Course, UUID>{ 
     List<Course> findByName(String name);
+
+    @Query("""
+            SELECT
+                new com.example.demo.model.Course(c.id, c.name, c.description)
+            FROM Course c
+            """)
+    ArrayList<Course> findAllPersonalize();
 
     @Transactional
     @Modifying
@@ -57,4 +66,21 @@ public interface CourseRepository extends CrudRepository<Course, UUID>{
         """
     )
     void deleteByName(@Param("nameParam")String nameParam);
+
+
+    @Query(nativeQuery = true, value = """
+        SELECT
+            s.id,
+            s.name,
+            s.registration
+        FROM
+            Student AS s
+        LEFT JOIN
+            StudentCourse AS u ON u.id_student = s.id
+        LEFT JOIN
+            Course AS c ON c.id = u.id_course
+        WHERE
+            c.name = :nameCourse
+            """)
+    List<Student> findByEnrolledStudent(String nameCourse);
 }

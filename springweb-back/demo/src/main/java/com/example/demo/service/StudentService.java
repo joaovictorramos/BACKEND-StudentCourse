@@ -7,13 +7,18 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.model.Course;
 import com.example.demo.model.Student;
+import com.example.demo.repository.CourseRepository;
 import com.example.demo.repository.StudentRepository;
 
 @Service
 public class StudentService {
     @Autowired
     private StudentRepository studentRepository;
+
+    @Autowired
+    private CourseRepository courseRepository;
 
     public void save(Student student){
         studentRepository.save(student);
@@ -86,8 +91,22 @@ public class StudentService {
     
     public void deleteByRegistration(String registration){
         if(!registration.trim().isEmpty() || registration.trim() != null){
-            List<Student> student = studentRepository.findByRegistration(registration);
-            if(student != null){
+            List<Student> students = studentRepository.findByRegistration(registration);
+            if(students != null){
+                Student student = students.get(0);
+                List<Course> courses = studentRepository.findByLinkedCourses(student.getRegistration());
+                if(courses != null){
+                    student.setCourses(null);
+                    courses.forEach(c ->{
+                        c.getStudent().forEach(s ->{
+                            if(s.getRegistration().equals(student.getRegistration())){
+                                s = null;
+                            }
+                        });
+                        courseRepository.save(c);
+                    });
+                    studentRepository.save(student);
+                }
                 studentRepository.deleteByRegistration(registration);
             }
         }

@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
+import com.example.demo.model.Course;
+import com.example.demo.model.Student;
 import com.example.demo.model.StudentCourse;
 
 public interface StudentCourseRepository extends CrudRepository<StudentCourse, UUID>{
@@ -30,15 +32,17 @@ public interface StudentCourseRepository extends CrudRepository<StudentCourse, U
             """)
     List<StudentCourse> findByCourse(@Param("id_course")String id_course);
 
+    // Não precisa?
     @Query("""
             DELETE FROM StudentCourse s
             WHERE s.id_student = :id_student
             """)
-    void deleteByStudent(@Param("id_student")String id_student);
+    void deleteByStudent(@Param("id_student")Student id_student);
 
+    // Não precisa?
     @Query("""
             DELETE FROM StudentCourse s
             WHERE s.id_course = :id_course
             """)
-    void deleteByCourse(@Param("id_course")String id_course);
+    void deleteByCourse(@Param("id_course")Course id_course);
 }

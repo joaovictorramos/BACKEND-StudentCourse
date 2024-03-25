@@ -1,7 +1,5 @@
 package com.example.demo.service;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,20 +35,24 @@ public class StudentCourseService {
         }
     }
 
+    // Não precisa?
     public void deleteByStudent(String id_student){
         if(!id_student.trim().isEmpty() || id_student.trim() != null){
-            List<StudentCourse> studentCourse = studentCourseRepository.findByStudent(id_student);
-            if(studentCourse != null){
-                studentCourseRepository.deleteByStudent(id_student);
+            Student student = studentService.findById(id_student);
+
+            if(student != null){
+                studentCourseRepository.deleteByStudent(student);
             }
         }
     }
 
+    // Não precisa?
     public void deleteByCourse(String id_course){
         if(!id_course.trim().isEmpty() || id_course.trim() != null){
-            List<StudentCourse> studentCourse = studentCourseRepository.findByCourse(id_course);
-            if(studentCourse != null){
-                studentCourseRepository.deleteByCourse(id_course);
+            Course course = courseService.findById(id_course);
+
+            if(course != null){
+                studentCourseRepository.deleteByCourse(course);
             }
         }
     }

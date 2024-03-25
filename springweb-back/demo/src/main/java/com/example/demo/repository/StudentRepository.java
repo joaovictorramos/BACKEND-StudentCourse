@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
+import com.example.demo.model.Course;
 import com.example.demo.model.Student;
 
 import jakarta.transaction.Transactional;
@@ -71,4 +72,20 @@ public interface StudentRepository extends CrudRepository<Student, UUID>{
     @Query(
         "DELETE FROM Student s WHERE s.registration = :registration")
     void deleteByRegistration(@Param("registration") String registration);
+
+    @Query(nativeQuery = true, value = """
+        SELECT 
+            c.id, 
+            c.name, 
+            c.description 
+        FROM 
+            Course AS c
+        LEFT JOIN 
+            StudentCourse AS u ON u.id_course = c.id 
+        LEFT JOIN 
+            Student AS s ON s.id = u.id_student
+        WHERE 
+            s.registration = :registration
+            """)
+    List<Course> findByLinkedCourses(String registration);
 }

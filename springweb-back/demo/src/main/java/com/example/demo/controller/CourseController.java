@@ -45,13 +45,22 @@ public class CourseController {
         return null;
     }
 
-    @PutMapping("/update-course-by-put")
-    public void putUpdateCourse(String nameParam, Course course){
+    @GetMapping("/find-all-course")
+    public List<Course> findAllCourse(){
+        List<Course> courses = courseService.findAll();
+        if(courses != null){
+            return courses;
+        }
+        return null;
+    }
+
+    @PutMapping("/update-course-by-put/{name}")
+    public void putUpdateCourse(@PathVariable("name") String nameParam, @RequestBody Course course){
         courseService.putUpdate(nameParam, course);
     }
 
-    @PatchMapping("/update-course-by-patch")
-    public void patchUpdateCourse(String nameParam, Course course){
+    @PatchMapping("/update-course-by-patch/{name}")
+    public void patchUpdateCourse(@PathVariable("name") String nameParam, @RequestBody Course course){
         courseService.patchUpdate(nameParam, course);
     }
 
